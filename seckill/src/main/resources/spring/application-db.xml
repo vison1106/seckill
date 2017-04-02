@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+	
+	<!-- c3p0数据源配置 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${db.seckill.driver}" />
+		<property name="jdbcUrl" value="${db.seckill.url}" />
+		<property name="user" value="${db.seckill.user}" />
+		<property name="password" value="${db.seckill.pass}" />
+		
+		<!-- 连接池私有属性配置 -->
+		<property name="maxPoolSize" value="${db.seckill.maxPoolSize}" />
+		<property name="minPoolSize" value="${db.seckill.minPoolSize}" />
+		<property name="autoCommitOnClose" value="false" />
+		<property name="checkoutTimeout" value="1000" />
+		<property name="acquireRetryAttempts" value="2" />
+	</bean>
+	
+	<!-- 配置SqlSessionFactory -->
+	<bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 设置数据源，mybatis-config，别名，mapper文件夹等信息 -->
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+		<property name="typeAliasesPackage" value="com.vison.seckill.entity" />
+		<property name="mapperLocations" value="classpath:mapper/**/*.xml" />
+	</bean>
+	
+	<!-- 扫描dao接口包，动态实现dao接口 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="sqlSessionFactoryBeanName" value="sessionFactory" />
+		<property name="basePackage" value="com.vison.seckill.dao" />
+	</bean>
+	
+	<!-- 声明式事务,注解管理 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<tx:annotation-driven/>
+
+</beans>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" debug="false">
+	
+	<!-- 变量配置 -->
+	<property name="app_name" value="seckill" />
+	<property name="log_home" value="C:/Users/Vison/Desktop" />
+	<property name="max_history" value="30" />
+	
+	<contextName>${app_name}</contextName>
+	
+	<!-- 通过文件记录日志信息，每天保存一个日志文件，最多保存30天 -->
+	<appender name="ROLLFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>DENY</onMatch>
+			<onMismatch>ACCEPT</onMismatch>
+		</filter>
+		
+		<file>${log_home}/${app_name}_info.log</file>
+		<encoder>
+			<charset>utf-8</charset>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%thread] %C.%M - %msg%n</pattern>
+		</encoder>
+		
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${log_home}/${app_name}_info-%d{yyyy-MM-dd}.log</FileNamePattern>
+			<MaxHistory>${max_history}</MaxHistory>
+		</rollingPolicy>
+	</appender>
+	
+	<appender name="ROLLFILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		
+		<file>${log_home}/${app_name}_error.log</file>
+		<encoder>
+			<charset>utf-8</charset>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%thread] %C.%M - %msg%n</pattern>
+		</encoder>
+		
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${log_home}/${app_name}_error-%d{yyyy-MM-dd}.log</FileNamePattern>
+			<MaxHistory>${max_history}</MaxHistory>
+		</rollingPolicy>
+	</appender>
+	
+	<!-- 拦截错误信息，记录到error.log -->
+	<logger name="com.vison.seckill" level="INFO">
+		<appender-ref ref="ROLLFILE" />
+	</logger>
+	
+	<root level="ERROR">
+		<appender-ref ref="ROLLFILE_ERROR" />
+	</root>
+	
+</configuration>
